@@ -1,0 +1,122 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 250 100% 99%;
+    --foreground: 262 47% 12%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 262 47% 12%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 262 47% 12%;
+
+    --primary: 260 36% 50%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 190 90% 57%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 260 36% 94%;
+    --muted-foreground: 260 36% 40%;
+
+    --accent: 260 52% 94%;
+    --accent-foreground: 260 36% 40%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 260 36% 90%;
+    --input: 260 36% 90%;
+    --ring: 260 36% 50%;
+
+    --radius: 0.5rem;
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 262 47% 12%;
+    --foreground: 0 0% 98%;
+
+    --card: 262 47% 15%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 262 47% 15%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 260 36% 65%;
+    --primary-foreground: 262 47% 12%;
+
+    --secondary: 190 90% 57%;
+    --secondary-foreground: 262 47% 12%;
+
+    --muted: 260 36% 25%;
+    --muted-foreground: 260 36% 80%;
+
+    --accent: 260 36% 25%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 260 36% 25%;
+    --input: 260 36% 25%;
+    --ring: 260 36% 65%;
+
+    --sidebar-background: 262 47% 15%;
+    --sidebar-foreground: 0 0% 98%;
+    --sidebar-primary: 260 36% 65%;
+    --sidebar-primary-foreground: 262 47% 12%;
+    --sidebar-accent: 260 36% 25%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 260 36% 25%;
+    --sidebar-ring: 260 36% 65%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-bold;
+  }
+  
+  h1 {
+    @apply text-4xl sm:text-5xl md:text-6xl;
+  }
+  
+  h2 {
+    @apply text-3xl sm:text-4xl;
+  }
+}
+
+@layer components {
+  .hero-gradient {
+    @apply bg-gradient-to-br from-ippurple/20 via-background to-ipblue/20;
+  }
+  
+  .ip-card {
+    @apply relative overflow-hidden rounded-xl border p-4 transition-all hover:shadow-md;
+  }
+  
+  .ip-gradient-border {
+    @apply before:absolute before:inset-0 before:-z-10 before:p-[1px] before:bg-gradient-to-br before:from-ippurple before:to-ipblue before:rounded-xl before:content-[""];
+  }
+}
