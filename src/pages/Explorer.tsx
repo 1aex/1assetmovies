@@ -12,7 +12,7 @@ const ExplorerPage = () => {
 
   useEffect(() => {
     if (id) {
-      // First API call
+      // Fetch IP details from the new API
       fetch(`https://staging-api.storyprotocol.net/api/v3/assets/${id}`, {
         headers: {
           "accept": "*/*",
@@ -24,117 +24,105 @@ const ExplorerPage = () => {
       })
         .then((response) => response.json())
         .then((data) => {
-          const ipData = data.data;
-          const tokenId = ipData.nftMetadata?.tokenId;
-          const tokenContract = ipData.nftMetadata?.tokenContract;
+          if (!data || !data.data) {
+            console.error("Invalid API response:", data);
+            return;
+          }
 
-          if (tokenId && tokenContract) {
-            // Second API call
+          const ipData = data.data;
+
+          setIpDetails({
+            ipId: id,
+            title: ipData.nftMetadata?.name || "N/A",
+            description: ipData.nftMetadata?.description || "N/A",
+            createdAt: ipData.blockTimestamp
+              ? new Date(parseInt(ipData.blockTimestamp) * 1000).toLocaleString()
+              : "N/A",
+            metadataUri: ipData.nftMetadata?.tokenUri || null,
+            imageUrl: ipData.nftMetadata?.imageUrl || null,
+            nftDetails: {
+              name: ipData.nftMetadata?.name || "N/A",
+              description: ipData.nftMetadata?.description || "N/A",
+              tokenContract: ipData.nftMetadata?.tokenContract || "N/A",
+              tokenId: ipData.nftMetadata?.tokenId
+                ? `#${ipData.nftMetadata.tokenId}`
+                : "N/A",
+              chain: "Story Aeneid (1315)",
+            },
+            traits: ipData.nftMetadata?.attributes || [],
+            animationUrl: ipData.animation?.originalUrl || null,
+          });
+
+          // Fetch metadata for creators, lineage, and license
+          fetch(`https://staging-api.storyprotocol.net/api/v3/assets/${id}/metadata`, {
+            headers: {
+              "accept": "*/*",
+              "content-type": "application/json",
+              "x-api-key": "Hils8o7iULtuuK45KBQ2SUEJmGKseUgRh-dRsX57RS0",
+              "x-chain": "story-aeneid",
+            },
+          })
+            .then((response) => response.json())
+            .then((metadataResponse) => {
+              if (!metadataResponse || !metadataResponse.metadataUri) {
+                console.error("Invalid metadata API response:", metadataResponse);
+                return;
+              }
+
+              // Fetch metadataUri for additional details
+              fetch(metadataResponse.metadataUri)
+                .then((response) => response.json())
+                .then((metadata) => {
+                  setIpDetails((prevDetails) => ({
+                    ...prevDetails,
+                    creators: metadata.creators || [],
+                  }));
+                })
+                .catch((error) => {
+                  console.error("Error fetching metadataUri:", error);
+                });
+            })
+            .catch((error) => {
+              console.error("Error fetching metadata API:", error);
+            });
+
+          // Fetch additional metadata using tokenContract and tokenId
+          const tokenContract = ipData.nftMetadata?.tokenContract;
+          const tokenId = ipData.nftMetadata?.tokenId;
+
+          if (tokenContract && tokenId) {
             fetch(
-              `https://api.simplehash.xyz/api/v0/nfts/story-aeneid/${tokenContract}/${tokenId}`,
+              `https://story-aeneid.g.alchemy.com/nft/v3/0ACboN5FhM8HVBsTwH-H0y9WGfVQbT9T/getNFTMetadata?contractAddress=${tokenContract}&tokenId=${tokenId}`,
               {
                 headers: {
                   "accept": "*/*",
                   "content-type": "application/json",
-                  "x-api-key": "storyprotoco_sk_3fclYjm1pegXwL6n5PX",
                 },
               }
             )
               .then((response) => response.json())
-              .then((nftData) => {
-                const metadataUrl = nftData.extra_metadata?.metadata_original_url || null;
+              .then((metadata) => {
+                if (!metadata || !metadata.raw) {
+                  console.error("Invalid metadata response:", metadata);
+                  return;
+                }
 
                 setIpDetails((prevDetails) => ({
                   ...prevDetails,
-                  ipId: id,
-                  title: nftData.name || "N/A",
-                  description: nftData.description || "N/A",
-                  createdAt: new Date(nftData.created_date).toLocaleString(),
-                  metadataUri: metadataUrl,
-                  imageUrl: nftData.image_url || null,
-                  nftDetails: {
-                    name: nftData.name || "N/A",
-                    description: nftData.description || "N/A",
-                    tokenContract: nftData.contract_address || "N/A",
-                    tokenId: `#${nftData.token_id}` || "N/A",
-                    creator: nftData.first_created?.minted_to || "N/A",
-                    owner: nftData.owners?.[0]?.owner_address || "N/A",
-                    chain: `Story Aeneid (${nftData.chain === "story-aeneid" ? "1315" : "N/A"})`,
-                  },
-                  traits: nftData.extra_metadata?.attributes || [],
+                  imageUrl: metadata.image?.cachedUrl || prevDetails.imageUrl,
+                  animationUrl: metadata.animation?.originalUrl || prevDetails.animationUrl,
+                  traits: metadata.raw.metadata?.attributes || prevDetails.traits,
+                  description: metadata.raw.metadata?.description || prevDetails.description,
                 }));
-
-                // Fetch metadataUri from the new API
-                fetch(
-                  `https://staging-api.storyprotocol.net/api/v3/assets/${id}/metadata`,
-                  {
-                    headers: {
-                      "accept": "*/*",
-                      "content-type": "application/json",
-                      "x-api-key": "Hils8o7iULtuuK45KBQ2SUEJmGKseUgRh-dRsX57RS0",
-                      "x-chain": "story-aeneid",
-                    },
-                  }
-                )
-                  .then((response) => response.json())
-                  .then((metadataResponse) => {
-                    const metadataUri = metadataResponse.metadataUri;
-
-                    setIpDetails((prevDetails) => ({
-                      ...prevDetails,
-                      metadataUri: metadataUri,
-                    }));
-
-                    // Fetch metadata from metadataUri
-                    if (metadataUri) {
-                      fetch(metadataUri)
-                        .then((response) => response.json())
-                        .then((metadata) => {
-                          setIpDetails((prevDetails) => ({
-                            ...prevDetails,
-                            creators: metadata.creators || [],
-                          }));
-                        })
-                        .catch((error) =>
-                          console.error("Error fetching metadata from metadataUri:", error)
-                        );
-                    }
-                  })
-                  .catch((error) =>
-                    console.error("Error fetching metadataUri:", error)
-                  );
               })
-              .catch((error) =>
-                console.error("Error fetching NFT details from SimpleHash:", error)
-              );
+              .catch((error) => {
+                console.error("Error fetching additional metadata:", error);
+              });
           }
         })
-        .catch((error) => console.error("Error fetching IP details:", error));
-
-      // Fetch license details
-      fetch(`https://staging-api.storyprotocol.net/api/v3/licenses/terms/1474`, {
-        headers: {
-          "accept": "*/*",
-          "content-type": "application/json",
-          "x-api-key": "Hils8o7iULtuuK45KBQ2SUEJmGKseUgRh-dRsX57RS0",
-          "x-chain": "story-aeneid",
-        },
-      })
-        .then((response) => response.json())
-        .then((licenseData) => {
-          const license = licenseData.data;
-          setIpDetails((prevDetails) => ({
-            ...prevDetails,
-            license: {
-              id: license.id,
-              template: license.licenseTemplate,
-              terms: license.licenseTerms || [],
-            },
-          }));
-        })
-        .catch((error) =>
-          console.error("Error fetching license details:", error)
-        );
+        .catch((error) => {
+          console.error("Error fetching IP details:", error);
+        });
     }
   }, [id]);
 
@@ -217,7 +205,9 @@ const ExplorerPage = () => {
                 {ipDetails?.traits && ipDetails.traits.length > 0 ? (
                   <ul className="list-disc pl-5">
                     {ipDetails.traits.map((trait: any, index: number) => (
-                      <li key={index}>{trait.value || "N/A"}</li>
+                      <li key={index}>
+                        <strong>{trait.key || "Trait"}:</strong> {trait.value || "N/A"}
+                      </li>
                     ))}
                   </ul>
                 ) : (
@@ -225,6 +215,21 @@ const ExplorerPage = () => {
                 )}
               </CardContent>
             </Card>
+
+            {/* Animation Section */}
+            {ipDetails?.animationUrl && (
+              <Card className="mt-6">
+                <CardHeader>
+                  <CardTitle>Animation</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <audio controls>
+                    <source src={ipDetails.animationUrl} type="audio/mp3" />
+                    Your browser does not support the audio element.
+                  </audio>
+                </CardContent>
+              </Card>
+            )}
           </div>
 
           {/* Right Column */}

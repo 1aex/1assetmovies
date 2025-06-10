@@ -56,9 +56,10 @@ const Marketplace = () => {
           }
         );
         const data = await response.json();
-        setMarketplaceAssets(data);
+        setMarketplaceAssets(Array.isArray(data) ? data : []); // Ensure array
       } catch (error) {
         console.error("Error fetching marketplace assets:", error);
+        setMarketplaceAssets([]); // Fallback to empty array on error
       }
     };
 
@@ -66,21 +67,23 @@ const Marketplace = () => {
   }, []);
 
   // Filter assets based on search query and filters
-  const filteredAssets = marketplaceAssets.filter((asset) => {
-    const matchesSearch =
-      searchQuery === "" ||
-      asset.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      asset.description.toLowerCase().includes(searchQuery.toLowerCase());
+  const filteredAssets = Array.isArray(marketplaceAssets)
+    ? marketplaceAssets.filter((asset) => {
+        const matchesSearch =
+          searchQuery === "" ||
+          asset.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          asset.description.toLowerCase().includes(searchQuery.toLowerCase());
 
-    const matchesType =
-      selectedType === "all" || asset.metadata.type === selectedType;
+        const matchesType =
+          selectedType === "all" || asset.metadata.type === selectedType;
 
-    const matchesCategory =
-      selectedCategory === "all" ||
-      asset.metadata.category === selectedCategory;
+        const matchesCategory =
+          selectedCategory === "all" ||
+          asset.metadata.category === selectedCategory;
 
-    return matchesSearch && matchesType && matchesCategory;
-  });
+        return matchesSearch && matchesType && matchesCategory;
+      })
+    : [];
 
   const handleMintLicense = async (licenseId: string, ipId: string) => {
     setIsLoading(true); // Start loader
@@ -189,37 +192,55 @@ const Marketplace = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredAssets.length > 0 ? (
               filteredAssets.map((asset) => (
-                <Card key={asset.id} className="overflow-hidden">
-                  <CardHeader className="pb-2">
-                    <CardTitle className="mt-2 line-clamp-1">{asset.name}</CardTitle>
-                    <CardDescription className="line-clamp-1">
-                      {asset.description}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-muted-foreground line-clamp-2 h-10">
-                      {asset.metadata.details}
-                    </p>
-                  </CardContent>
-                  <CardFooter className="flex justify-between">
-                    <Button
-                      variant="outline"
-                      className="text-xs"
-                      onClick={() => navigate(`/explorer/${asset.ip_id}`)} // Navigate to explorer page
+                <div
+                  key={asset.id}
+                  className="border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow relative flex flex-col bg-white"
+                >
+                  <div className="relative">
+                    <img
+                      src={asset.imageurl || "https://dummyimage.com/300x200/cccccc/ffffff&text=No+Image"}
+                      alt={asset.name}
+                      className="w-full h-40 object-cover"
+                    />
+                    <span
+                      className={`absolute top-2 right-2 text-xs font-medium px-2 py-1 rounded ${
+                        asset.imageurl
+                          ? "bg-green-100 text-green-700"
+                          : "bg-yellow-100 text-yellow-700"
+                      }`}
                     >
-                      View Details
-                    </Button>
-                    <Button
-                      variant="default"
-                      className="text-xs"
-                      onClick={() => navigate(`/mint/${asset.ip_id}`)} // Navigate to mint page
-                      disabled={isLoading} // Disable button while loading
-                    >
-                      {isLoading ? "Minting..." : "Mint License"} {/* Show loader text */}
-                      {!isLoading && <ArrowRight className="ml-1 h-4 w-4" />} {/* Hide icon when loading */}
-                    </Button>
-                  </CardFooter>
-                </Card>
+                      {asset.imageurl ? "Verified" : "Pending"}
+                    </span>
+                  </div>
+                  <div className="p-4 flex flex-col flex-1">
+                    <h3 className="font-semibold text-lg truncate mb-2">{asset.name}</h3>
+                    <p className="text-sm text-gray-600 mb-4 truncate">{asset.description}</p>
+                    <div className="flex items-center justify-between text-xs text-gray-500 mb-4">
+                      <span>Category: {asset.metadata?.category || "N/A"}</span>
+                      <span>Type: {asset.metadata?.type || "N/A"}</span>
+                    </div>
+                    <div className="flex gap-2 mt-auto">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => navigate(`/explorer/${asset.ip_id}`)}
+                        className="flex-1"
+                      >
+                        View in Explorer
+                      </Button>
+                      <Button
+                        variant="default"
+                        size="sm"
+                        onClick={() => navigate(`/mint/${asset.ip_id}`)}
+                        disabled={isLoading}
+                        className="flex-1"
+                      >
+                        {isLoading ? "Buying..." : "Buy License"}
+                        {!isLoading && <ArrowRight className="ml-1 h-4 w-4" />}
+                      </Button>
+                    </div>
+                  </div>
+                </div>
               ))
             ) : (
               <div className="col-span-full flex flex-col items-center justify-center p-12">

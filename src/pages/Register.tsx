@@ -63,8 +63,8 @@ const insertDataToSupabase = async (data: {
     const response = await fetch("https://cbgqjdrwffppgxbnsvds.supabase.co/rest/v1/items", {
       method: "POST",
       headers: {
-        "apikey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNiZ3FqZHJ3ZmZwcGd4Ym5zdmRzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcyMDM2NDIsImV4cCI6MjA2Mjc3OTY0Mn0.9jEd0YrX8huojN96XOVNfGNjweH_mdJPJcWt3o7RJoM",
-        "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNiZ3FqZHJ3ZmZwcGd4Ym5zdmRzIiwicm9zZSI6ImFub24iLCJpYXQiOjE3NDcyMDM2NDIsImV4cCI6MjA2Mjc3OTY0Mn0.9jEd0YrX8huojN96XOVNfGNjweH_mdJPJcWt3o7RJoM",
+        apikey: `${import.meta.env.VITE_SUPABASE_KEY}`,
+        Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({

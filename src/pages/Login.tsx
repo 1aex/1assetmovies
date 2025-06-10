@@ -3,7 +3,7 @@ import * as THREE from 'three';
 import { useNavigate } from 'react-router-dom';
 
 const Login: React.FC = () => {
-  const [email, setEmail] = useState<string>('');
+  const [username, setUsername] = useState<string>(''); // Renamed from email to username
   const [password, setPassword] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
@@ -61,12 +61,8 @@ const Login: React.FC = () => {
     e.preventDefault();
     setError(null);
 
-    if (!validateEmail(email)) {
-      setError('Invalid email format');
-      return;
-    }
-    if (!validatePassword(password)) {
-      setError('Password must be at least 8 characters with 1 number and 1 special character');
+    if (username !== 'admin' || password !== 'password') {
+      setError('Invalid username or password');
       return;
     }
 
@@ -83,7 +79,7 @@ const Login: React.FC = () => {
 
   const handleSignOut = () => {
     setIsLoggedIn(false);
-    setEmail('');
+    setUsername('');
     setPassword('');
     setError(null);
   };
@@ -107,12 +103,12 @@ const Login: React.FC = () => {
           <div className="flex flex-col items-center">
             <form onSubmit={handleEmailSignIn} className="w-full mb-4">
               <div className="mb-4">
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
+                <label htmlFor="username" className="block text-sm font-medium text-gray-700">Username</label>
                 <input
-                  type="email"
-                  id="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  type="text"
+                  id="username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                   className="mt-1 p-2 w-full border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                   required
                 />
@@ -132,7 +128,7 @@ const Login: React.FC = () => {
                 type="submit"
                 className="w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
               >
-                Sign in with Email
+                Sign in
               </button>
             </form>
             <div className="w-full">

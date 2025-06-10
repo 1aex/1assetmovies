@@ -13,6 +13,8 @@ import NotFound from "@/pages/NotFound";
 import Login from "./pages/Login";
 import ExplorerPage from "./pages/Explorer";
 import MintPage from "./pages/Mint"; // <-- Import the new Mint page
+import LicenseList from "./pages/LicenseList";
+import LicenseByAsset from "./pages/LicenseByAsset";
 
 
 const queryClient = new QueryClient();
@@ -29,7 +31,9 @@ const App = () => {
                   <Route path="/" element={<Login />} />
                     <Route path="/home" element={<HomePage />} />
                     <Route path="/register" element={<RegisterPage />} />
+                    <Route path="/license/" element={<LicenseList />} />
                     <Route path="/license/:id" element={<LicensePage />} />
+                    <Route path="/licensebyasset/:id" element={<LicenseByAsset />} />
                     <Route path="/marketplace" element={<MarketplacePage />} />
                     <Route path="/dashboard" element={<DashboardPage />} />
                     <Route path="/explorer/:id" element={<ExplorerPage />} />

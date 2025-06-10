@@ -317,7 +317,7 @@ const DashboardPage = () => {
                         onViewClick={() => handleViewClick(asset.ip_id)}
                         onMintClick={() => handleMintClick(asset.ip_id)}
                         onAddToMarketplaceClick={() => handleAddToMarketplace(asset.id)}
-                        onViewLicenseClick={() => navigate(`/license/${asset.ip_id}`)}
+                        onViewLicenseClick={() => navigate(`/licensebyasset/${asset.ip_id}`)}
                       />
                     ))}
                   </div>
