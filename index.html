@@ -1,15 +1,17 @@
-
 <!DOCTYPE html>
 <html lang="en">
+
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>1AEX IP Vault | Register, License & Monetize Your IP On-Chain</title>
-    <meta name="description" content="Register, tokenize, license, and monetize your creative IP using Story Protocol" />
+    <meta name="description"
+      content="Register, tokenize, license, and monetize your creative IP using Story Protocol" />
     <meta name="author" content="1AEX IP Vault" />
 
     <meta property="og:title" content="1AEX IP Vault | Register, License & Monetize Your IP On-Chain" />
-    <meta property="og:description" content="Register, tokenize, license, and monetize your creative IP using Story Protocol" />
+    <meta property="og:description"
+      content="Register, tokenize, license, and monetize your creative IP using Story Protocol" />
     <meta property="og:type" content="website" />
     <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
 
@@ -22,6 +24,18 @@
     <div id="root"></div>
     <!-- IMPORTANT: DO NOT REMOVE THIS SCRIPT TAG OR THIS VERY COMMENT! -->
     <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
+    <script>
+      if (typeof crypto !== 'undefined' && !crypto.randomUUID) {
+        crypto.randomUUID = function () {
+          return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+            const r = Math.random() * 16 | 0;
+            const v = c === 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+          });
+        };
+      }
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
+
 </html>

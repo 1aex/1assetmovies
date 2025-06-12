@@ -31,9 +31,21 @@ import {
 import { client } from "@/utils/config"; // Import client for minting licenses
 
 // Marketplace component
+interface MarketplaceAsset {
+  id: string;
+  name: string;
+  description: string;
+  imageurl?: string;
+  ip_id: `0x${string}`;
+  metadata?: {
+    type?: string;
+    category?: string;
+  };
+}
+
 const Marketplace = () => {
   const navigate = useNavigate();
-  const [marketplaceAssets, setMarketplaceAssets] = useState([]);
+  const [marketplaceAssets, setMarketplaceAssets] = useState<MarketplaceAsset[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedType, setSelectedType] = useState("all");
   const [selectedCategory, setSelectedCategory] = useState("all");
@@ -75,22 +87,23 @@ const Marketplace = () => {
           asset.description.toLowerCase().includes(searchQuery.toLowerCase());
 
         const matchesType =
-          selectedType === "all" || asset.metadata.type === selectedType;
+          selectedType === "all" || asset.metadata?.type === selectedType;
 
         const matchesCategory =
           selectedCategory === "all" ||
-          asset.metadata.category === selectedCategory;
+          asset.metadata?.category === selectedCategory;
 
         return matchesSearch && matchesType && matchesCategory;
       })
     : [];
 
   const handleMintLicense = async (licenseId: string, ipId: string) => {
-    setIsLoading(true); // Start loader
+    setIsLoading(true);
     try {
+      const formattedIpId = (ipId.startsWith('0x') ? ipId : `0x${ipId}`) as `0x${string}`;
       const response = await client.license.mintLicenseTokens({
         licenseTermsId: licenseId,
-        licensorIpId: ipId,
+        licensorIpId: formattedIpId,
         amount: 1,
         maxMintingFee: BigInt(0), // disabled
         maxRevenueShare: 100, // default
@@ -198,9 +211,23 @@ const Marketplace = () => {
                 >
                   <div className="relative">
                     <img
-                      src={asset.imageurl || "https://dummyimage.com/300x200/cccccc/ffffff&text=No+Image"}
+                      src={asset.imageurl ? 
+                        `https://res.cloudinary.com/demo/image/fetch/${encodeURIComponent(asset.imageurl)}` : 
+                        "https://dummyimage.com/300x200/cccccc/ffffff&text=No+Image"
+                      }
                       alt={asset.name}
                       className="w-full h-40 object-cover"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        if (target.src.includes('cloudinary.com')) {
+                          // If Cloudinary proxy fails, try direct URL
+                          target.src = asset.imageurl || "https://dummyimage.com/300x200/cccccc/ffffff&text=No+Image";
+                        } else {
+                          // If direct URL fails, show error image
+                          target.src = "https://dummyimage.com/300x200/cccccc/ffffff&text=Image+Error";
+                        }
+                        target.onerror = null; // Prevent infinite loop
+                      }}
                     />
                     <span
                       className={`absolute top-2 right-2 text-xs font-medium px-2 py-1 rounded ${
