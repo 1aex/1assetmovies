@@ -93,6 +93,7 @@ const DashboardPage = () => {
     history: [],
   });
   const [claimingRevenue, setClaimingRevenue] = useState(false);
+  const [licenseCount, setLicenseCount] = useState(0);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -133,6 +134,21 @@ const DashboardPage = () => {
                 : BookOpen, // Fallback icon for unknown categories
           }))
         );
+
+        // Fetch license count from API
+        const licenseResponse = await fetch(
+          "https://cbgqjdrwffppgxbnsvds.supabase.co/rest/v1/mint",
+          {
+            headers: {
+              apikey: `${import.meta.env.VITE_SUPABASE_KEY}`,
+              Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_KEY}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        const licenseData = await licenseResponse.json();
+        setLicenseCount(Array.isArray(licenseData) ? licenseData.length : 0);
+
         // Example royalty data, replace with actual API response if available
         setMockRoyalties({
           total: 2.45,
@@ -147,6 +163,7 @@ const DashboardPage = () => {
         });
       } catch (error) {
         console.error("Error fetching data:", error);
+        setLicenseCount(0);
       }
     };
 
@@ -257,7 +274,7 @@ const DashboardPage = () => {
               <div className="flex items-center">
                 <Award className="h-5 w-5 text-ippurple mr-2" />
                 <span className="text-2xl font-bold">
-                  {mockAssets.reduce((acc, asset) => acc + asset.licenses, 0)}
+                  {licenseCount}
                 </span>
               </div>
             </CardContent>
