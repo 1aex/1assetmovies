@@ -160,7 +160,7 @@ const DashboardPage = () => {
       setClaimingRevenue(false);
       toast({
         title: "Revenue Claimed Successfully",
-        description: "2.45 ETH has been transferred to your wallet.",
+        description: "2.45 IP has been transferred to your wallet.",
       });
     }, 2000);
   };
@@ -272,7 +272,7 @@ const DashboardPage = () => {
             <CardContent>
               <div className="flex items-center">
                 <Wallet className="h-5 w-5 text-ippurple mr-2" />
-                <span className="text-2xl font-bold">{mockRoyalties.total} ETH</span>
+                <span className="text-2xl font-bold">{mockRoyalties.total} IP</span>
               </div>
             </CardContent>
           </Card>
@@ -365,7 +365,7 @@ const DashboardPage = () => {
                     <div className="bg-ippurple/10 rounded-lg p-4">
                       <div className="flex items-center justify-between mb-1">
                         <span className="text-sm font-medium">Available to Claim</span>
-                        <span className="text-sm">{mockRoyalties.total} ETH</span>
+                        <span className="text-sm">{mockRoyalties.total} IP</span>
                       </div>
                       <Button 
                         onClick={handleClaimRevenue} 
@@ -386,7 +386,7 @@ const DashboardPage = () => {
                             <div className="text-xs text-muted-foreground">Nov 2, 2023</div>
                           </div>
                           <div className="text-right">
-                            <div className="font-medium">0.35 ETH</div>
+                            <div className="font-medium">0.35 IP</div>
                             <div className="text-xs text-green-600">Completed</div>
                           </div>
                         </div>
@@ -397,7 +397,7 @@ const DashboardPage = () => {
                             <div className="text-xs text-muted-foreground">Oct 15, 2023</div>
                           </div>
                           <div className="text-right">
-                            <div className="font-medium">0.52 ETH</div>
+                            <div className="font-medium">0.52 IP</div>
                             <div className="text-xs text-green-600">Completed</div>
                           </div>
                         </div>
@@ -408,7 +408,7 @@ const DashboardPage = () => {
                             <div className="text-xs text-muted-foreground">Oct 3, 2023</div>
                           </div>
                           <div className="text-right">
-                            <div className="font-medium">1.20 ETH</div>
+                            <div className="font-medium">1.20 IP</div>
                             <div className="text-xs text-green-600">Completed</div>
                           </div>
                         </div>
