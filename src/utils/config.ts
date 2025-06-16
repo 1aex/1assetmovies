@@ -1,3 +1,4 @@
+
 import { aeneid, mainnet, StoryClient, StoryConfig } from '@story-protocol/core-sdk'
 import { Chain, createPublicClient, createWalletClient, http, WalletClient } from 'viem'
 import { privateKeyToAccount, Address, Account } from 'viem/accounts'
@@ -35,37 +36,40 @@ const networkConfigs: Record<NetworkType, NetworkConfig> = {
 } as const
 
 // Helper functions
-const validateEnvironmentVars = () => {
-    if (!import.meta.env.VITE_WALLET_PRIVATE_KEY) {
-        throw new Error(
-            'Environment variable VITE_WALLET_PRIVATE_KEY is missing. Please ensure it is defined in your .env file.'
-        );
-    }
-    if (!import.meta.env.VITE_STORY_NETWORK) {
-        throw new Error(
-            'Environment variable VITE_STORY_NETWORK is missing. Please ensure it is defined in your .env file.'
-        );
-    }
-}
-
 const getNetwork = (): NetworkType => {
     const network = import.meta.env.VITE_STORY_NETWORK as NetworkType
     if (network && !(network in networkConfigs)) {
-        throw new Error(`Invalid network: ${network}. Must be one of: ${Object.keys(networkConfigs).join(', ')}`)
+        console.warn(`Invalid network: ${network}. Must be one of: ${Object.keys(networkConfigs).join(', ')}. Falling back to 'aeneid'.`)
+        return 'aeneid'
     }
     return network || 'aeneid'
 }
 
 // Initialize client configuration
 export const network = getNetwork()
-validateEnvironmentVars()
 
 export const networkInfo = {
     ...networkConfigs[network],
     rpcProviderUrl: import.meta.env.VITE_RPC_PROVIDER_URL || networkConfigs[network].rpcProviderUrl,
 }
 
-export const account: Account = privateKeyToAccount(`0x${import.meta.env.VITE_WALLET_PRIVATE_KEY}` as Address)
+const privateKey = import.meta.env.VITE_WALLET_PRIVATE_KEY;
+
+if (!privateKey) {
+    console.warn(
+        "VITE_WALLET_PRIVATE_KEY is not set. Using a dummy account for the common wallet. " +
+        "Write operations with the common wallet will fail. " +
+        "Please connect your own wallet (e.g., MetaMask) to perform transactions."
+    );
+}
+
+// Use a dummy private key if the env var is not set. This allows the app to initialize.
+// The dummy account won't be able to sign any transactions, which is the desired behavior.
+const DUMMY_PRIVATE_KEY = '0x0000000000000000000000000000000000000000000000000000000000000001';
+
+export const account: Account = privateKeyToAccount(
+    privateKey ? `0x${privateKey}` : DUMMY_PRIVATE_KEY
+);
 
 const config: StoryConfig = {
     account,

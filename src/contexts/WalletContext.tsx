@@ -62,6 +62,24 @@ const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ children }) =
   const [userAddress, setUserAddress] = useState<Address | null>(null);
   const [userBalance, setUserBalance] = useState<string | null>(null);
   const [isUserWallet, setIsUserWallet] = useState(false);
+
+  useEffect(() => {
+    // Check for a previously connected wallet address in localStorage
+    const storedAddress = localStorage.getItem('walletAddress');
+    if (storedAddress) {
+        setUserAddress(storedAddress as Address);
+        setIsUserWallet(true);
+        // You might want to update balance here as well
+    }
+  }, []);
+
+  useEffect(() => {
+    if (userAddress) {
+      localStorage.setItem('walletAddress', userAddress);
+    } else {
+      localStorage.removeItem('walletAddress');
+    }
+  }, [userAddress]);
   
   const handleAccountsChanged = useCallback(async (...args: unknown[]) => {
     const accounts = args[0] as string[];
@@ -311,4 +329,4 @@ const useWallet = () => {
   return context;
 };
 
-export { useWallet, WalletProvider }; 
+export { useWallet, WalletProvider };

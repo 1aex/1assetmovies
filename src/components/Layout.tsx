@@ -33,10 +33,10 @@ const pageVariants = {
 
 const Layout = ({ children }: LayoutProps) => {
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-screen flex-col bg-background">
       <Navbar />
       <motion.main 
-        className="flex-grow"
+        className="flex-grow container py-6"
         initial="initial"
         animate="animate"
         exit="exit"
